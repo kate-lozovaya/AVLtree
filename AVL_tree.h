@@ -18,24 +18,24 @@ class AVL_tree
 private:
 	Node<T> * root;
 
-	void deleteNode(Node<T> * node);
+	void _deleteNode(Node<T> * node);
 
-	unsigned int height_(Node<T> * node);
-	int bfactor(Node<T> * node);
-	void fixheight(Node<T> * node);
+	unsigned int _height(Node<T> * node);
+	int _balanceFactor(Node<T> * node);
+	void _fixHeight(Node<T> * node);
 
-	Node<T> * rotate_left(Node<T> * node);
-	Node<T> * rotate_right(Node<T> * node);
+	Node<T> * _rotateLeft(Node<T> * node);
+	Node<T> * _rotateRight(Node<T> * node);
 
-	Node<T> * balance(Node<T> * node);
+	Node<T> * _balance(Node<T> * node);
 
-	void insert(Node<T>* & node, const T& value);
+	void _insert(Node<T>* & node, const T& value);
 
-	Node<T> * find_min(Node<T> * node);
-	Node<T> * remove_min(Node<T> * node);
-	void remove(Node<T>* & node, const T& value);
+	Node<T> * _findMin(Node<T> * node);
+	Node<T> * _removeMin(Node<T> * node);
+	void _remove(Node<T>* & node, const T& value);
 
-	void print(Node<T> * node, std::ostream & stream, size_t level)const;
+	void _print(Node<T> * node, std::ostream & stream, size_t level)const;
 public:
 	AVL_tree();
 	~AVL_tree();
@@ -54,37 +54,37 @@ AVL_tree<T>::AVL_tree() : root{ nullptr } {};
 template<typename T>
 AVL_tree<T>::~AVL_tree()
 {
-	deleteNode(root);
+	_deleteNode(root);
 }
 template<typename T>
-void AVL_tree<T>::deleteNode(Node<T> * node)
+void AVL_tree<T>::_deleteNode(Node<T> * node)
 {
 	if (node == nullptr) return;
-	deleteNode(node->left);
-	deleteNode(node->right);
+	_deleteNode(node->left);
+	_deleteNode(node->right);
 	delete node;
 }
 template<typename T>
-unsigned int AVL_tree<T>::height_(Node<T> * node)
+unsigned int AVL_tree<T>::_height(Node<T> * node)
 {
 	if (node)
 		return node->height;
 	return 0;
 }
 template<typename T>
-int AVL_tree<T>::bfactor(Node<T> * node)
+int AVL_tree<T>::_balanceFactor(Node<T> * node)
 {
-	return height_(node->right) - height_(node->left);
+	return _height(node->right) - _height(node->left);
 }
 template<typename T>
 void AVL_tree<T>::fixheight(Node<T> * node)
 {
-	unsigned int h_l =  height_(node->left);
-	unsigned int h_r = height_(node->right);
+	unsigned int h_l =  _height(node->left);
+	unsigned int h_r = _height(node->right);
 	node->height = (h_l > h_r ? h_l : h_r) + 1;
 }
 template<typename T>
-Node<T> * AVL_tree<T>::rotate_left(Node<T> * node)
+Node<T> * AVL_tree<T>::_rotateLeft(Node<T> * node)
 {
 	Node<T> * r = node->right;
 	if (node == root)
@@ -101,12 +101,12 @@ Node<T> * AVL_tree<T>::rotate_left(Node<T> * node)
 	r->left = node;
 	node->parent = r;
 	
-	fixheight(node);
-	fixheight(r);
+	_fixHeight(node);
+	_fixHeight(r);
 	return r;
 }
 template<typename T>
-Node<T> * AVL_tree<T>::rotate_right(Node<T> * node)
+Node<T> * AVL_tree<T>::_rotateRight(Node<T> * node)
 {
 	Node<T> * l = node->left;
 	if (node == root)
@@ -123,34 +123,34 @@ Node<T> * AVL_tree<T>::rotate_right(Node<T> * node)
 	l->right = node;
 	node->parent = l;
 
-	fixheight(node);
-	fixheight(l);
+	_fixHeight(node);
+	_fixHeight(l);
 	return l;
 }
 template<typename T>
-Node<T> *  AVL_tree<T>::balance(Node<T> * node)
+Node<T> *  AVL_tree<T>::_balance(Node<T> * node)
 {
-	fixheight(node);
-	if (bfactor(node) == 2)
+	_fixHeight(node);
+	if (_bfactor(node) == 2)
 	{
-		if (bfactor(node->right) < 0)
-			node->right = rotate_right(node->right);
-		return rotate_left(node);
+		if (_bfactor(node->right) < 0)
+			node->right = _rotateRight(node->right);
+		return _rotateLeft(node);
 	}
-	if (bfactor(node) == -2)
+	if (_bfactor(node) == -2)
 	{
-		if (bfactor(node->left) > 0)
-			node->left = rotate_left(node->left);
-		return rotate_right(node);
+		if (_bfactor(node->left) > 0)
+			node->left = _rotateLeft(node->left);
+		return _rotateRight(node);
 	}
 }
 template<typename T>
 void AVL_tree<T>::insert(const T& value)
 {
-	insert(root, value);
+	_insert(root, value);
 }
 template<typename T>
-void AVL_tree<T>::insert(Node<T> * & node, const T& value)
+void AVL_tree<T>::_insert(Node<T> * & node, const T& value)
 {
 	Node<T> * parent = nullptr;
 	Node<T> * cur = node;
@@ -175,29 +175,29 @@ void AVL_tree<T>::insert(Node<T> * & node, const T& value)
 	}
 	while (cur && cur->parent)
 	{
-		balance(cur->parent);
+		_balance(cur->parent);
 		cur = cur->parent;
 	}
 }
 template<typename T>
-Node<T> * AVL_tree<T>::find_min(Node<T> * node)
+Node<T> * AVL_tree<T>::_findMin(Node<T> * node)
 {
-	return node->left ? find_min(node->left) : node;
+	return node->left ? _findMin(node->left) : node;
 }
 template<typename T>
 void AVL_tree<T>::remove(const T& value)
 {
-	remove(root, value);
+	_remove(root, value);
 }
 template<typename T>
-void AVL_tree<T>::remove(Node<T>* & node, const T& value)
+void AVL_tree<T>::_remove(Node<T>* & node, const T& value)
 {
 	if (node)
 	{
 		if (value < node->key)
-			remove(node->left, value);
+			_remove(node->left, value);
 		else if (value > node->key)
-			remove(node->right, value);
+			_remove(node->right, value);
 		else if (value == node->key)
 		{
 			Node<T> * cur_p = node->parent;
@@ -210,7 +210,7 @@ void AVL_tree<T>::remove(Node<T>* & node, const T& value)
 					//node->parent->height = 1;
 					do
 					{
-						balance(cur_p);
+						_balance(cur_p);
 						cur_p = cur_p->parent;
 					} while (cur_p);
 				}
@@ -220,7 +220,7 @@ void AVL_tree<T>::remove(Node<T>* & node, const T& value)
 					//node->parent->height = 1;
 					do
 					{
-						balance(cur_p);
+						_balance(cur_p);
 						cur_p = cur_p->parent;
 					} while (cur_p);
 				}
@@ -235,7 +235,7 @@ void AVL_tree<T>::remove(Node<T>* & node, const T& value)
 					node->parent = parent;
 					while (cur_p)
 					{
-						balance(cur_p);
+						_balance(cur_p);
 						cur_p = cur_p->parent;
 					}
 				}
@@ -245,20 +245,20 @@ void AVL_tree<T>::remove(Node<T>* & node, const T& value)
 					node->left->parent = node->parent;
 					while (cur_p)
 					{
-						balance(cur_p);
+						_balance(cur_p);
 						cur_p = cur_p->parent;
 					}
 				}
 			}
 			else if (node->right)
 			{
-				Node<T> * min = find_min(node->right);
+				Node<T> * min = _findMin(node->right);
 				T m = min->key;
 				remove(min->key);
 				node->key = m;
 				while (cur_p)
 				{
-					balance(cur_p);
+					_balance(cur_p);
 					cur_p = cur_p->parent;
 				}
 			}
@@ -286,18 +286,18 @@ Node<T> * AVL_tree<T>::search(const T& value)const
 template<typename T>
 void AVL_tree<T>::print(std::ostream & stream)
 {
-	print(root, stream, 0);
+	_print(root, stream, 0);
 }
 template<typename T>
-void AVL_tree<T>::print(Node<T> * node, std::ostream & stream, size_t level)const
+void AVL_tree<T>::_print(Node<T> * node, std::ostream & stream, size_t level)const
 {
 	Node<T> * curEl = node;
 	if (curEl != nullptr)
 	{
-		print(curEl->right, stream, level + 1);
+		_print(curEl->right, stream, level + 1);
 		for (unsigned int i = 0; i < level; ++i)
 			stream << '-';
 		stream << curEl->key << " " << curEl->height << std::endl;
-		print(curEl->left, stream, level + 1);
+		_print(curEl->left, stream, level + 1);
 	}
 }
